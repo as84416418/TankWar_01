@@ -4,7 +4,7 @@ public class EnemyTank {
     private int x; //坦克的x轴坐标
     private int y;//坦克的y轴坐标
     private int direct;//坦克的朝向  0上  1右  2下  3左
-    private int speed = 5;//坦克的移动速度
+    private int speed = 4;//坦克的移动速度
 
     //把坦克的移动(上右下左)方法给封装到坦克类里
     public void moveUp(){
