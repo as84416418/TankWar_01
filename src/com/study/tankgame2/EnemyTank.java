@@ -7,16 +7,19 @@ public class EnemyTank {
     private int speed = 5;//坦克的移动速度
 
     //把坦克的移动(上右下左)方法给封装到坦克类里
-    public void moveUp(){
+    public void moveUp() {
         y -= speed;
     }
-    public void moveRight(){
+
+    public void moveRight() {
         x += speed;
     }
-    public void moveDown(){
+
+    public void moveDown() {
         y += speed;
     }
-    public void moveLeft(){
+
+    public void moveLeft() {
         x -= speed;
     }
 
