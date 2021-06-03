@@ -1,5 +1,8 @@
 package com.study.method;
 
+/**
+ * 守护线程：当用户线程执行完毕之后，不论守护线程处于何种状态，都直接结束掉守护线程
+ */
 public class ThreadMethod03 {
     public static void main(String[] args) throws InterruptedException {
         MyDaemonThread myDaemonThread = new MyDaemonThread();
