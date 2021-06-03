@@ -13,6 +13,7 @@ public class ThreadExit {
         t.setLoop(false);
     }
 }
+
 class T extends Thread {
     private int count = 0;
 
@@ -20,7 +21,7 @@ class T extends Thread {
 
     @Override
     public void run() {
-        while (loop){
+        while (loop) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
