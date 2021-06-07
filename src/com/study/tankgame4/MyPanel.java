@@ -37,7 +37,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             new Thread(enemyTank).start();
 
             //每初始化一个敌方坦克，给该坦克初始化一个子弹，并发射(启动该子弹线程)
-            Shot shot = new Shot(enemyTank.getX(), enemyTank.getY(), enemyTank.getDirect());
+            Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
             enemyTank.getShots().add(shot);
             new Thread(shot).start();
         }
@@ -108,7 +108,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                     Shot shot = enemyTank.getShots().get(j);
                     //子弹线程遍历
                     if (shot.isLive()) { //isLive == true
-                        g.draw3DRect(shot.getX() + 20, shot.getY() + 60, 2, 2, false);
+                        g.draw3DRect(shot.getX(), shot.getY(), 1, 1, false);
                     } else {
                         //从Vector 中移除子弹
                         enemyTank.getShots().remove(j);

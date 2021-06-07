@@ -87,6 +87,29 @@ public class EnemyTank implements Runnable {
     @Override
     public void run() {
         while (true) {
+            //当敌方坦克打出的子弹线程终止之后，重新发射子弹
+            if (isLive && shots.size() == 0) {
+                Shot s = null;
+                //根据坦克的朝向，来确定子弹的初始发射位置
+                switch (getDirect()) {
+                    case 0:
+                        s = new Shot(getX() + 20, getY(), 0);
+                        break;
+                    case 1:
+                        s = new Shot(getX() + 60, getY() + 20, 1);
+                        break;
+                    case 2:
+                        s = new Shot(getX() + 20, getY() + 60, 2);
+                        break;
+                    case 3:
+                        s = new Shot(getX(), getY() + 20, 3);
+                        break;
+                }
+                //创建子弹之后，把子弹加入到集合中
+                shots.add(s);
+                //启动新创建的子弹线程，保证他会移动
+                new Thread(s).start();
+            }
             switch (getDirect()) {
                 case 0://向上移动
                     for (int i = 0; i < 30; i++) {
