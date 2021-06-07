@@ -1,4 +1,4 @@
-package com.study.tankgame2;
+package com.study.tankgame3;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,18 +8,20 @@ import java.util.Vector;
 
 //坦克大战的绘图区域
 //为了监听 键盘事件, 实现 KeyListener
-public class MyPanel extends JPanel implements KeyListener {
+//为了实现子弹的动态移动，需要 MyPanel也变成线程，然后在子弹发射时也能够不停重绘画板，实现子弹的动态移动效果
+public class MyPanel extends JPanel implements KeyListener,Runnable {
     MyTank mt = null;
 
     //把敌人的坦克放到一个 Vector 集合中，考虑到多线程的问题
     Vector<EnemyTank> enemyTanks = new Vector<>();
     int enemyTankSize = 3;
+
     public MyPanel() {
         //初始化己方坦克
         mt = new MyTank(100, 100);
 
         //初始化敌方坦克
-        for(int i = 0; i < enemyTankSize; i++){
+        for (int i = 0; i < enemyTankSize; i++) {
             EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
             enemyTank.setDirect(2);
             enemyTanks.add(enemyTank);
@@ -35,10 +37,15 @@ public class MyPanel extends JPanel implements KeyListener {
         //画出坦克-封装方法
         drawTank(mt.getX(), mt.getY(), g, mt.getDirect(), 0);
 
+        //画出子弹
+        if (mt.getShot() != null && mt.getShot().isLive() == true) {
+            g.draw3DRect(mt.getShot().getX(), mt.getShot().getY(), 2, 2, false);
+        }
+
         //画出敌方坦克
-        for(int i = 0; i < enemyTanks.size(); i++){
+        for (int i = 0; i < enemyTanks.size(); i++) {
             EnemyTank enemyTank = enemyTanks.get(i);
-            drawTank(enemyTank.getX(),enemyTank.getY(),g,enemyTank.getDirect(),1);
+            drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), 1);
         }
     }
 
@@ -130,22 +137,38 @@ public class MyPanel extends JPanel implements KeyListener {
             //改变坦克的方向
             mt.setDirect(0);
             mt.moveUp();
-        } else if(e.getKeyCode() == KeyEvent.VK_D) {//按下D键
+        } else if (e.getKeyCode() == KeyEvent.VK_D) {//按下D键
             mt.setDirect(1);
             mt.moveRight();
-        }else if(e.getKeyCode() == KeyEvent.VK_S) {//按下S键
+        } else if (e.getKeyCode() == KeyEvent.VK_S) {//按下S键
             mt.setDirect(2);
             mt.moveDown();
-        }else if(e.getKeyCode() == KeyEvent.VK_A) {//按下A键
+        } else if (e.getKeyCode() == KeyEvent.VK_A) {//按下A键
             mt.setDirect(3);
             mt.moveLeft();
         }
 
+        //按下 J键，发射子弹
+        if (e.getKeyCode() == KeyEvent.VK_J) {
+            mt.shotEnemyTank();
+        }
         this.repaint();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.repaint();
+        }
     }
 }
