@@ -8,16 +8,16 @@ public class Tank {
 
     //把坦克的移动(上右下左)方法给封装到坦克类里
     public void moveUp(){
-        y -= speed;
+            y -= speed;
     }
     public void moveRight(){
-        x += speed;
+            x += speed;
     }
     public void moveDown(){
-        y += speed;
+            y += speed;
     }
     public void moveLeft(){
-        x -= speed;
+            x -= speed;
     }
 
     public int getSpeed() {

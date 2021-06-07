@@ -90,7 +90,9 @@ public class EnemyTank implements Runnable {
             switch (getDirect()) {
                 case 0://向上移动
                     for (int i = 0; i < 30; i++) {
-                        moveUp();
+                        if (getY() > 0) {
+                            moveUp();
+                        }
                         try {
                             Thread.sleep(50);
                         } catch (InterruptedException e) {
@@ -100,7 +102,9 @@ public class EnemyTank implements Runnable {
                     break;
                 case 1://向右移动
                     for (int i = 0; i < 30; i++) {
-                        moveRight();
+                        if (getX() + 80 < 1000) {
+                            moveRight();
+                        }
                         try {
                             Thread.sleep(50);
                         } catch (InterruptedException e) {
@@ -110,7 +114,9 @@ public class EnemyTank implements Runnable {
                     break;
                 case 2://向下移动
                     for (int i = 0; i < 30; i++) {
-                        moveDown();
+                        if (getY() + 100 < 750) {
+                            moveDown();
+                        }
                         try {
                             Thread.sleep(50);
                         } catch (InterruptedException e) {
@@ -120,7 +126,9 @@ public class EnemyTank implements Runnable {
                     break;
                 case 3://向左移动
                     for (int i = 0; i < 30; i++) {
-                        moveLeft();
+                        if (getX() > 0) {
+                            moveLeft();
+                        }
                         try {
                             Thread.sleep(50);
                         } catch (InterruptedException e) {
