@@ -8,6 +8,18 @@ import java.util.Vector;
 public class MyTank extends Tank {
     private Shot shot = null;
     Vector<Shot> shots = new Vector<>();
+    private boolean isLive = true;
+
+    @Override
+    public boolean isLive() {
+        return isLive;
+    }
+
+    @Override
+    public void setLive(boolean live) {
+        isLive = live;
+    }
+
     public MyTank(int x, int y) {
         super(x, y);
     }

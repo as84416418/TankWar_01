@@ -6,6 +6,16 @@ public class Tank {
     private int direct;//坦克的朝向  0上  1右  2下  3左
     private int speed = 5;//坦克的移动速度
 
+    public boolean isLive() {
+        return isLive;
+    }
+
+    public void setLive(boolean live) {
+        isLive = live;
+    }
+
+    private boolean isLive = true;
+
     //把坦克的移动(上右下左)方法给封装到坦克类里
     public void moveUp(){
             y -= speed;
