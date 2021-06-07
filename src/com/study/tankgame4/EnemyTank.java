@@ -8,6 +8,15 @@ public class EnemyTank {
     private int direct;//坦克的朝向  0上  1右  2下  3左
     private int speed = 5;//坦克的移动速度
     private Vector<Shot> shots = new Vector<>();//地方坦克发射的子弹集合
+    private boolean isLive = true;
+
+    public boolean isLive() {
+        return isLive;
+    }
+
+    public void setLive(boolean live) {
+        isLive = live;
+    }
 
     public Vector<Shot> getShots() {
         return shots;

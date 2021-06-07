@@ -50,17 +50,20 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         //画出敌方坦克
         for (int i = 0; i < enemyTanks.size(); i++) {
             EnemyTank enemyTank = enemyTanks.get(i);
-            drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), 1);
-            //同时发射子弹
-            for (int j = 0; j < enemyTank.getShots().size(); j++) {
-                //取出子弹
-                Shot shot = enemyTank.getShots().get(j);
-                //子弹线程遍历
-                if (shot.isLive()){ //isLive == true
-                    g.draw3DRect(shot.getX() + 20, shot.getY() + 60, 2, 2, false);
-                }else {
-                    //从Vector 中移除子弹
-                    enemyTank.getShots().remove(j);
+            //判断当前坦克是否存活
+            if (enemyTank.isLive()) {//敌方坦克存活
+                drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), 1);
+                //同时发射子弹
+                for (int j = 0; j < enemyTank.getShots().size(); j++) {
+                    //取出子弹
+                    Shot shot = enemyTank.getShots().get(j);
+                    //子弹线程遍历
+                    if (shot.isLive()) { //isLive == true
+                        g.draw3DRect(shot.getX() + 20, shot.getY() + 60, 2, 2, false);
+                    } else {
+                        //从Vector 中移除子弹
+                        enemyTank.getShots().remove(j);
+                    }
                 }
             }
         }
@@ -142,6 +145,34 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         }
     }
 
+    /**
+     * 编写子弹击中敌方坦克的方法
+     *
+     * @param shot
+     * @param enemyTank
+     */
+    public void hitTank(Shot shot, EnemyTank enemyTank) {
+        //判断s 击中坦克
+        switch (enemyTank.getDirect()) {
+            case 0://敌方坦克朝上
+            case 2://敌方坦克朝下
+                if (shot.getX() > enemyTank.getX() && shot.getX() < enemyTank.getX() + 40
+                        && shot.getY() > enemyTank.getY() && shot.getY() < enemyTank.getY() + 60) {
+                    shot.setLive(false);
+                    enemyTank.setLive(false);
+                }
+                break;
+            case 1://敌方坦克朝右
+            case 3://敌方坦克朝左
+                if (shot.getX() > enemyTank.getX() && shot.getX() < enemyTank.getX() + 60
+                        && shot.getY() > enemyTank.getY() && shot.getY() < enemyTank.getY() + 40) {
+                    shot.setLive(false);
+                    enemyTank.setLive(false);
+                }
+                break;
+        }
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -184,6 +215,12 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+
+            if (mt.getShot() != null &&mt.getShot().isLive()) {
+                for (int i = 0; i < enemyTanks.size(); i++) {
+                    hitTank(mt.getShot(), enemyTanks.get(i));
+                }
             }
             this.repaint();
         }

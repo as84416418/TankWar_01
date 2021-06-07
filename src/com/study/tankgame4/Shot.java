@@ -86,9 +86,10 @@ public class Shot implements Runnable {
             //测试，观察子弹的坐标变化是否与预期相同
             System.out.println("子弹坐标  x=" + x + " y=" +y);
             //判断 如果子弹飞出画板边界，则终止线程
-            if (!(x >= 0 && x <= 1000 && y >= 0 && y <= 750)) {
+            //判断，如果外界修改子弹生命为false，也终止子弹线程
+            if (!(x >= 0 && x <= 1000 && y >= 0 && y <= 750 && isLive)) {
                 //这里可以给子弹一个变量用于外界判断子弹线程是否终止
-                System.out.println("子弹飞出边界...");
+                System.out.println("子弹线程结束...");
                 isLive = false;
                 break;
             }
