@@ -1,15 +1,21 @@
 package com.study.tankgame4;
 
+import java.util.Vector;
+
 /**
  * 把子弹发射的方法写到坦克中
  */
 public class MyTank extends Tank {
     private Shot shot = null;
+    Vector<Shot> shots = new Vector<>();
     public MyTank(int x, int y) {
         super(x, y);
     }
 
     public void shotEnemyTank(){
+        if (shots.size() == 5){
+            return;
+        }
         shot = new Shot(getX(),getY(),getDirect());
         //需要根据此时坦克的朝向，调整炮管(确定子弹的起始发射位置)
         switch (getDirect()){
@@ -30,6 +36,8 @@ public class MyTank extends Tank {
                 shot.setY(getY() + 20);
                 break;
         }
+        //把新创建的shot加入到集合中
+        shots.add(shot);
         //发射子弹(启动子弹线程)
         new Thread(shot).start();
     }

@@ -57,9 +57,18 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         //画出坦克-封装方法
         drawTank(mt.getX(), mt.getY(), g, mt.getDirect(), 0);
 
-        //画出子弹
-        if (mt.getShot() != null && mt.getShot().isLive() == true) {
-            g.draw3DRect(mt.getShot().getX(), mt.getShot().getY(), 2, 2, false);
+        //画出子弹(同时只能存在一发子弹)
+        /*if (mt.getShot() != null && mt.getShot().isLive() == true) {
+            g.draw3DRect(mt.getShot().getX(), mt.getShot().getY(), 1, 1, false);
+        }*/
+        //同时存在多发子弹,遍历子弹集合一一画出
+        for (int i = 0; i < mt.shots.size(); i++) {
+            Shot shot = mt.shots.get(i);
+            if (shot != null && shot.isLive() == true) {
+                g.draw3DRect(shot.getX(), shot.getY(), 1, 1, false);
+            } else {//如果该shot对象已经无效，就从shots集合中删除
+                mt.shots.remove(shot);
+            }
         }
 
         //如果bombs 集合中有对象，就画出爆炸效果
@@ -187,6 +196,31 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
     /**
      * 编写子弹击中敌方坦克的方法
+     * (可以同时存在多发子弹)
+     * 遍历每一颗子弹，在所有子弹的线程终止前，都拿去和敌方所有坦克进行比较
+     *
+     * @param shots
+     * @param enemyTanks
+     */
+    public void hitTank(Vector<Shot> shots, Vector<EnemyTank> enemyTanks) {
+        //先遍历所有的子弹
+        for (int i = 0; i < shots.size(); i++) {
+            Shot shot = shots.get(i);
+            //每拿到一发子弹，都去和所有的敌方坦克作比较
+            for (int j = 0; j < enemyTanks.size(); j++) {
+                EnemyTank enemyTank = enemyTanks.get(j);
+                //调用之前写的单个子弹击中坦克的判断
+                hitTank(shot, enemyTank);
+            }
+        }
+
+    }
+
+    /**
+     * 编写子弹击中敌方坦克的方法
+     * (只能同时存在一发子弹)
+     * 发射的这一发子弹如果在移动中进入了敌方坦克所覆盖的区域，就算命中
+     * 子弹线程在没终止前,同时不停的和敌方所有坦克进行比较
      *
      * @param shot
      * @param enemyTank
@@ -255,6 +289,11 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
         //按下 J键，发射子弹
         if (e.getKeyCode() == KeyEvent.VK_J) {
+            //如果mt对象的子弹线程没有结束，就不能发射下一发子弹(同时只能存在一发子弹)
+            /*if(mt.getShot() == null || !mt.getShot().isLive()) {
+                mt.shotEnemyTank();
+            }*/
+            //同时存在多发子弹的情况
             mt.shotEnemyTank();
         }
         this.repaint();
@@ -274,13 +313,15 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                 e.printStackTrace();
             }
 
-            //判断是否击中了敌方坦克
-            if (mt.getShot() != null && mt.getShot().isLive()) {
+            //判断是否击中了敌方坦克(己方坦克同时只能存在一发子弹的时候)
+            /*if (mt.getShot() != null && mt.getShot().isLive()) {
                 //遍历敌方坦克
                 for (int m = 0; m < enemyTanks.size(); m++) {
                     hitTank(mt.getShot(), enemyTanks.get(m));
                 }
-            }
+            }*/
+            //己方坦克可以发射多发子弹时
+            hitTank(mt.shots, enemyTanks);
             this.repaint();
         }
     }
