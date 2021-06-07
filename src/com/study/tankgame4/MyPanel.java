@@ -14,7 +14,15 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
     //把敌人的坦克放到一个 Vector 集合中，考虑到多线程的问题
     Vector<EnemyTank> enemyTanks = new Vector<>();
+    //定义一个Vector, 用于存放炸弹
+    //当子弹击中坦克时，加入一个炸弹对象
+    Vector<Bomb> bombs = new Vector<>();
     int enemyTankSize = 3;
+
+    //定义三张炸弹图片,用于显示爆炸效果
+    Image image1 = null;
+    Image image2 = null;
+    Image image3 = null;
 
     public MyPanel() {
         //初始化己方坦克
@@ -31,6 +39,11 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             enemyTank.getShots().add(shot);
             new Thread(shot).start();
         }
+
+        //初始化图片对象
+        image1 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_1.png"));
+        image2 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_2.png"));
+        image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_3.png"));
     }
 
     @Override
@@ -45,6 +58,31 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         //画出子弹
         if (mt.getShot() != null && mt.getShot().isLive() == true) {
             g.draw3DRect(mt.getShot().getX(), mt.getShot().getY(), 2, 2, false);
+        }
+
+        //如果bombs 集合中有对象，就画出爆炸效果
+        for (int i = 0; i < bombs.size(); i++) {
+            //取出炸弹
+            Bomb bomb = bombs.get(i);
+            System.out.println(" bombs 长度 " + bombs.size());
+            //根据当前这个bomb对象的life值去画出对应的图片
+            if (bomb.life > 8) {
+                g.drawImage(image1, bomb.x, bomb.y, 60, 60, this);
+            } else if (bomb.life > 4) {
+                g.drawImage(image2, bomb.x, bomb.y, 60, 60, this);
+            } else {
+                g.drawImage(image3, bomb.x, bomb.y, 60, 60, this);
+            }
+
+            //让生命值减少
+            bomb.lifeDown();
+
+            //炸弹效果结束后，把炸弹对象从集合中删除
+            if (bomb.life == 0) {
+                bombs.remove(bomb);
+                System.out.println(" bombs 长度 " + bombs.size());
+            }
+
         }
 
         //画出敌方坦克
@@ -160,6 +198,11 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                         && shot.getY() > enemyTank.getY() && shot.getY() < enemyTank.getY() + 60) {
                     shot.setLive(false);
                     enemyTank.setLive(false);
+                    //创建Bomb对象,加入到bombs 集合
+                    Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
+                    bombs.add(bomb);
+                    System.out.println("加入炸弹对象...");
+                    enemyTanks.remove(enemyTank);
                 }
                 break;
             case 1://敌方坦克朝右
@@ -168,6 +211,10 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                         && shot.getY() > enemyTank.getY() && shot.getY() < enemyTank.getY() + 40) {
                     shot.setLive(false);
                     enemyTank.setLive(false);
+                    //创建Bomb对象,加入到bombs 集合
+                    Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
+                    bombs.add(bomb);
+                    enemyTanks.remove(enemyTank);
                 }
                 break;
         }
@@ -217,9 +264,11 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                 e.printStackTrace();
             }
 
-            if (mt.getShot() != null &&mt.getShot().isLive()) {
-                for (int i = 0; i < enemyTanks.size(); i++) {
-                    hitTank(mt.getShot(), enemyTanks.get(i));
+            //判断是否击中了敌方坦克
+            if (mt.getShot() != null && mt.getShot().isLive()) {
+                //遍历敌方坦克
+                for (int m = 0; m < enemyTanks.size(); m++) {
+                    hitTank(mt.getShot(), enemyTanks.get(m));
                 }
             }
             this.repaint();
