@@ -3,16 +3,20 @@ package com.study.tankgame4;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Scanner;
 
 public class TankGame04 extends JFrame {
     //定义MyPanel
     MyPanel mp = null;
+    static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         TankGame04 tankGame01 = new TankGame04();
     }
     public TankGame04(){
-        mp = new MyPanel();
+        System.out.println("请输入 1: 新游戏 2: 继续上局");
+        String key = scanner.next();
+        mp = new MyPanel(key);
         new Thread(mp).start();
         this.add(mp);
         //设置窗口的大小

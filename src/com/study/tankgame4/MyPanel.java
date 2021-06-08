@@ -10,10 +10,13 @@ import java.util.Vector;
 //为了监听 键盘事件, 实现 KeyListener
 //为了实现子弹的动态移动，需要 MyPanel也变成线程，然后在子弹发射时也能够不停重绘画板，实现子弹的动态移动效果
 public class MyPanel extends JPanel implements KeyListener, Runnable {
+    //定义我的坦克
     MyTank mt = null;
 
     //把敌人的坦克放到一个 Vector 集合中，考虑到多线程的问题
     Vector<EnemyTank> enemyTanks = new Vector<>();
+    //定义一个Node 的 Vector集合，用于读取文件中的坦克信息
+    Vector<Node> nodes = new Vector<>();
     //定义一个Vector, 用于存放炸弹
     //当子弹击中坦克时，加入一个炸弹对象
     Vector<Bomb> bombs = new Vector<>();
@@ -24,27 +27,56 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     Image image2 = null;
     Image image3 = null;
 
-    public MyPanel() {
+    public MyPanel(String key) {
         //初始化己方坦克
         mt = new MyTank(600, 100);
 
         //将敌方坦克集合赋予记录器
         Recorder.setEnemyTanks(enemyTanks);
+        //读取文件中的信息
+        nodes = Recorder.getNodesAndNumRec();
 
-        //初始化敌方坦克
-        for (int i = 0; i < enemyTankSize; i++) {
-            EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
-            enemyTank.setDirect(2);
-            enemyTanks.add(enemyTank);
-            enemyTank.setEnemyTanks(enemyTanks);
-            //启动敌方坦克线程,让其随机移动
-            new Thread(enemyTank).start();
+        switch (key){
+            case "1"://新游戏
+                //初始化积分
+                Recorder.setAllEnemyTank(0);
+                //初始化敌方坦克
+                for (int i = 0; i < enemyTankSize; i++) {
+                    EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
+                    enemyTank.setDirect(2);
+                    enemyTanks.add(enemyTank);
+                    enemyTank.setEnemyTanks(enemyTanks);
+                    //启动敌方坦克线程,让其随机移动
+                    new Thread(enemyTank).start();
 
-            //每初始化一个敌方坦克，给该坦克初始化一个子弹，并发射(启动该子弹线程)
-            Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
-            enemyTank.getShots().add(shot);
-            new Thread(shot).start();
+                    //每初始化一个敌方坦克，给该坦克初始化一个子弹，并发射(启动该子弹线程)
+                    Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
+                    enemyTank.getShots().add(shot);
+                    new Thread(shot).start();
+                }
+                break;
+            case "2"://继续上局游戏
+                //初始化敌方坦克
+                for (int i = 0; i < nodes.size(); i++) {
+                    Node node = nodes.get(i);
+                    EnemyTank enemyTank = new EnemyTank(node.getX(), node.getY());
+                    enemyTank.setDirect(node.getDirect());
+                    enemyTanks.add(enemyTank);
+                    enemyTank.setEnemyTanks(enemyTanks);
+                    //启动敌方坦克线程,让其随机移动
+                    new Thread(enemyTank).start();
+
+                    //每初始化一个敌方坦克，给该坦克初始化一个子弹，并发射(启动该子弹线程)
+                    Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
+                    enemyTank.getShots().add(shot);
+                    new Thread(shot).start();
+                }
+                break;
+            default:
+                System.out.println("输入错误！");
         }
+
+
 
         //初始化图片对象
         image1 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_1.png"));
