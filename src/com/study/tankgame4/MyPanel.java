@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.util.Vector;
 
 //坦克大战的绘图区域
@@ -31,12 +32,22 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         //初始化己方坦克
         mt = new MyTank(600, 100);
 
+        //先判断记录的文件是否存在
+        //如果存在，就正常执行，如果文件不存在，提示，只能开启新游戏，key = "1"
+        File file = new File(Recorder.getRecordFile());
+        if (file.exists()) {
+            //读取文件中的信息
+            nodes = Recorder.getNodesAndNumRec();
+        } else {
+            System.out.println("文件不存在，只能开启新游戏！");
+            key = "1";
+        }
+
         //将敌方坦克集合赋予记录器
         Recorder.setEnemyTanks(enemyTanks);
-        //读取文件中的信息
-        nodes = Recorder.getNodesAndNumRec();
 
-        switch (key){
+
+        switch (key) {
             case "1"://新游戏
                 //初始化积分
                 Recorder.setAllEnemyTank(0);
@@ -75,7 +86,6 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             default:
                 System.out.println("输入错误！");
         }
-
 
 
         //初始化图片对象

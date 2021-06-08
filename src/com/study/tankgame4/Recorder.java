@@ -16,6 +16,11 @@ public class Recorder {
     //定义IO对象
     private static BufferedWriter bw = null;
     private static BufferedReader br = null;
+
+    public static String getRecordFile() {
+        return recordFile;
+    }
+
     private static String recordFile = "src\\myRecord.txt";
 
     public static void setEnemyTanks(Vector<EnemyTank> enemyTanks) {
