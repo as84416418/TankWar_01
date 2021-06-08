@@ -26,7 +26,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
     public MyPanel() {
         //初始化己方坦克
-        mt = new MyTank(100, 100);
+        mt = new MyTank(600, 100);
 
         //初始化敌方坦克
         for (int i = 0; i < enemyTankSize; i++) {
@@ -49,14 +49,27 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_3.png"));
     }
 
+    //编写方法,显示我方击毁敌方坦克的信息
+    public void showInfo(Graphics g) {
+        //显示游戏界面右边的信息
+        g.setColor(Color.BLACK);
+        Font font = new Font("宋体", Font.BOLD, 25);
+        g.setFont(font);
+        g.drawString("您累计干碎敌方坦克", 1020, 30);
+        drawTank(1020, 60, g, 0, 1);
+        g.setColor(Color.BLACK);
+        g.drawString(Recorder.getAllEnemyTank() + "", 1080, 100);
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         //填充矩形，默认黑色
         g.fillRect(0, 0, 1000, 750);
+        showInfo(g);
 
         //画出坦克-封装方法
-        if(mt != null && mt.isLive()) {
+        if (mt != null && mt.isLive()) {
             drawTank(mt.getX(), mt.getY(), g, mt.getDirect(), 0);
         }
 
@@ -135,10 +148,10 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         //根据不同的坦克设置不同的颜色
         switch (type) {
             case 0://己方坦克
-                g.setColor(Color.cyan);
-                break;
-            case 1://地方坦克
                 g.setColor(Color.yellow);
+                break;
+            case 1://敌方坦克
+                g.setColor(Color.cyan);
                 break;
         }
 
@@ -226,51 +239,59 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
      * 子弹线程在没终止前,同时不停的和坦克进行比较
      *
      * @param shot
-     * @param Tank
+     * @param tank
      */
-    public void hitTank(Shot shot, Tank Tank) {
+    public void hitTank(Shot shot, Tank tank) {
         //判断s 击中坦克
-        switch (Tank.getDirect()) {
+        switch (tank.getDirect()) {
             case 0://敌方坦克朝上
             case 2://敌方坦克朝下
-                if (shot.getX() > Tank.getX() && shot.getX() < Tank.getX() + 40
-                        && shot.getY() > Tank.getY() && shot.getY() < Tank.getY() + 60) {
+                if (shot.getX() > tank.getX() && shot.getX() < tank.getX() + 40
+                        && shot.getY() > tank.getY() && shot.getY() < tank.getY() + 60) {
                     shot.setLive(false);
-                    Tank.setLive(false);
+                    tank.setLive(false);
                     //创建Bomb对象,加入到bombs 集合
-                    Bomb bomb = new Bomb(Tank.getX(), Tank.getY());
+                    Bomb bomb = new Bomb(tank.getX(), tank.getY());
                     bombs.add(bomb);
                     System.out.println("加入炸弹对象...");
-                    enemyTanks.remove(Tank);
+                    enemyTanks.remove(tank);
+                    //当我放击毁一个敌人坦克时，就对数据 allEnemyTank++
+                    if (tank instanceof EnemyTank) {
+                        Recorder.add();
+                    }
                 }
                 break;
             case 1://敌方坦克朝右
             case 3://敌方坦克朝左
-                if (shot.getX() > Tank.getX() && shot.getX() < Tank.getX() + 60
-                        && shot.getY() > Tank.getY() && shot.getY() < Tank.getY() + 40) {
+                if (shot.getX() > tank.getX() && shot.getX() < tank.getX() + 60
+                        && shot.getY() > tank.getY() && shot.getY() < tank.getY() + 40) {
                     shot.setLive(false);
-                    Tank.setLive(false);
+                    tank.setLive(false);
                     //创建Bomb对象,加入到bombs 集合
-                    Bomb bomb = new Bomb(Tank.getX(), Tank.getY());
+                    Bomb bomb = new Bomb(tank.getX(), tank.getY());
                     bombs.add(bomb);
-                    enemyTanks.remove(Tank);
+                    enemyTanks.remove(tank);
+                    //当我放击毁一个敌人坦克时，就对数据 allEnemyTank++
+                    if (tank instanceof EnemyTank) {
+                        Recorder.add();
+                    }
                 }
                 break;
         }
     }
 
     //编写方法，判断敌人坦克是否击中我的坦克
-    public void hitMt(){
+    public void hitMt() {
         //遍历所有的敌人坦克
-        for (int i = 0;i<enemyTanks.size();i++){
+        for (int i = 0; i < enemyTanks.size(); i++) {
             EnemyTank enemyTank = enemyTanks.get(i);
             //每一个敌方坦克的子弹也全部遍历
-            for(int j = 0;j<enemyTank.getShots().size();j++){
+            for (int j = 0; j < enemyTank.getShots().size(); j++) {
                 //取出子弹
                 Shot shot = enemyTank.getShots().get(j);
                 //判断 shot 是否击中己方坦克
-                if(mt.isLive()){//如果己方坦克存活
-                    hitTank(shot,mt);
+                if (mt.isLive()) {//如果己方坦克存活
+                    hitTank(shot, mt);
                 }
             }
         }
