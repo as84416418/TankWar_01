@@ -28,6 +28,9 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         //初始化己方坦克
         mt = new MyTank(600, 100);
 
+        //将敌方坦克集合赋予记录器
+        Recorder.setEnemyTanks(enemyTanks);
+
         //初始化敌方坦克
         for (int i = 0; i < enemyTankSize; i++) {
             EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
