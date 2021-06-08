@@ -33,6 +33,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             EnemyTank enemyTank = new EnemyTank((100 * (i + 1)), 0);
             enemyTank.setDirect(2);
             enemyTanks.add(enemyTank);
+            enemyTank.setEnemyTanks(enemyTanks);
             //启动敌方坦克线程,让其随机移动
             new Thread(enemyTank).start();
 
